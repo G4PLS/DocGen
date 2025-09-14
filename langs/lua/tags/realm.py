@@ -1,4 +1,4 @@
-from src.docMatcher import StateDocTag
+from DocMatcher.docTag import StateDocTag
 
 class RealmDocTag(StateDocTag):
     NAME: str = "realm"

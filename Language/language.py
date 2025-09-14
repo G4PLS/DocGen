@@ -1,4 +1,4 @@
-from src.docMatcher import DocBlock, DocTag
+from DocMatcher import DocBlock, DocTag
 
 class Language:
     NAME: str

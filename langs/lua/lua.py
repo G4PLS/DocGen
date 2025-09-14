@@ -1,5 +1,5 @@
-from src.language.language import Language
-from src.docMatcher import DocTag, DocBlock
+from Language import Language
+from DocMatcher import DocTag, DocBlock
 from .tags import *
 from .blocks import *
 

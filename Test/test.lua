@@ -39,3 +39,11 @@ end
 ---
 function GM:DTTTMute()
 end
+
+
+---@convar ttt_idle_limit
+--@default number 5
+--@desc Help text
+--@flags FCVAR_NOTIFY FCVAR_ARCHIVE
+---
+local idle_time = CreateConVar("ttt_idle_limit", "180", { FCVAR_NOTIFY, FCVAR_ARCHIVE }, "Help text")

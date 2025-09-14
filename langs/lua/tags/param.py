@@ -1,4 +1,4 @@
-from src.docMatcher import ParameterDocTag
+from DocMatcher.docTag import ParameterDocTag
 
 class ParamDocTag(ParameterDocTag):
     NAME: str = "param"

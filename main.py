@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from src.fileParser import FileParser
+from fileParser import FileParser
 
 def main():
     print("H EYHEY")

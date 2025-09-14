@@ -1,7 +1,7 @@
 import os
 
-from src.language.language import Language
-from src.langs import *
+from Language import Language
+from langs import *
 
 class LanguageMatcher:
     _LANGUAGES: dict[str, type[Language]] = {}

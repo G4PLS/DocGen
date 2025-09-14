@@ -1,50 +1,8 @@
+from abc import abstractmethod
+from .docMatcher import DocElement
 from typing import TypeVar, Generic
-from abc import ABC, abstractmethod
 
-T = TypeVar("T", bound="DocElement")
-
-class DocMatcher(Generic[T]):
-    def __init__(self, allowed: list[type[T]]):
-        self._registry: dict[str, type[T]] = {entry.NAME: entry for entry in allowed}
-    
-    def get(self, registry_key: str, *args, **kwargs):
-        cls = self._registry.get(registry_key)
-
-        if not cls:
-            return None
-        
-        return cls(*args, **kwargs)
-    
-class DocElement(ABC):
-    NAME: str
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def json(self):
-        pass
-
-class DocBlock(DocElement, Generic[T]):
-    NAME: str
-
-    def __init__(self, name: str):
-        super().__init__()
-
-        print("CREATED", name)
-
-        self.block_name: str = name
-        self._elements: list[T] = []
-
-    def add_element(self, element: T):
-        self._elements.append(element)
-
-    def json(self):
-        return {
-            "type": self.NAME,
-            "name": self.block_name,
-            "elements": [element.json() for element in self._elements]
-        }
+T = TypeVar("T", bound="ValueDocTag")
 
 class DocTag(DocElement):
     NAME: str = "undefined"
@@ -62,6 +20,10 @@ class DocTag(DocElement):
     @abstractmethod
     def parse_data(self, data: str):
         pass
+
+#
+#
+#
 
 class TextDocTag(DocTag):
     TYPE: str = "TEXT"
@@ -142,3 +104,47 @@ class StateDocTag(DocTag):
     def parse_data(self, data):
         if data in self.STATES:
             self.state = data
+
+class ValueDocTag(ParameterDocTag):
+    TYPE: str = "VALUE"
+    NAME: str
+    SPLIT: int = 2
+
+    def __init__(self, file_path, line_number, data):
+        self.type: str
+        self.value: str
+
+        super().__init__(file_path, line_number, data)
+
+    def json(self):
+        return {
+            "type": self.TYPE,
+            "tag-type": self.NAME,
+            "value-type": self.type,
+            "value": self.value
+        }
+
+    def parse_data(self, data: str):
+        parts = self.split_data(data)
+
+        self.type = parts[0]
+        self.value = parts[1]
+
+class ListDocTag(DocTag):
+    TYPE: str = "LIST"
+    NAME: str
+    
+    def __init__(self, file_path, line_number, data):
+        self.list: list[str]
+
+        super().__init__(file_path, line_number, data)
+
+    def json(self):
+        return {
+            "type": self.TYPE,
+            "tag-type": self.NAME,
+            "list": self.list
+        }
+
+    def parse_data(self, data: str):
+        self.list = data.split()

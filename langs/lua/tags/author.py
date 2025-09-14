@@ -1,4 +1,4 @@
-from src.docMatcher import TextDocTag
+from DocMatcher.docTag import TextDocTag
 
 class AuthorDocTag(TextDocTag):
     NAME: str = "author"

@@ -1,9 +1,7 @@
 import re
 
-from src.language.languageMatcher import LanguageMatcher
-from src.language.language import Language
-
-from src.docMatcher import DocMatcher, DocTag, DocBlock
+from Language import *
+from DocMatcher import *
 
 class FileParser:
     @staticmethod
