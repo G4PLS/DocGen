@@ -3,10 +3,11 @@ from pathlib import Path
 from fileParser import FileParser
 
 def main():
-    print("H EYHEY")
+    fp = FileParser()
+
     for path in Path("./Test").rglob("*"):  # recursive glob
         if path.is_file():
-            FileParser.parse_file(path)
+            fp.parse_file(path)
         elif path.is_dir():
             print("Dir:", path)
 
