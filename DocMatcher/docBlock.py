@@ -2,7 +2,7 @@ from .docMatcher import DocElement
 from .docTag import DocTag
 
 class DocBlock(DocElement):
-    NAME: str
+    NAME: str = "UNDEFINED"
     ALLOWED_TAGS: list[type[DocTag]] = None
 
     def __init__(self, name: str):
