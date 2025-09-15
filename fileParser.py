@@ -3,67 +3,71 @@ import re
 from Language import *
 from DocMatcher import *
 
-class FileParser:
-    @staticmethod
-    def parse_file(path: str):
-        language: Language = LanguageMatcher.get_language_for_file(path)
 
-        if not language:
+class FileParser:
+    def __init__(self):
+        self.blocks: list[DocBlock] = []
+
+        self.current_language: Language = None
+        self.current_file_path: str = ""
+        self.current_lines: list[str] = ""
+
+    def parse_file(self, path: str):
+        self.current_file_path = path
+        self.current_language = LanguageMatcher.get_language_for_file(path)
+
+        if not self.current_language: 
             return
         
-        print("PARSING", path)
-        
-        lines: list[str] = []
+        self.current_lines: list[str] = []
         with open(path, "r", encoding="utf-8") as file:
-            lines = [line.strip() for line in file]
+            self.current_lines = [line.strip() for line in file]
 
-        FileParser.parse_lines(lines, language, path)
+        self.parse_lines()
 
-    @staticmethod
-    def parse_lines(lines: list[str], language: Language, path: str):
-        block_matcher = DocMatcher(language.ALLOWED_BLOCKS)
-        tag_matcher = DocMatcher(language.ALLOWED_TAGS)
+    def parse_lines(self):
+        i = 0
+        while i < len(self.current_lines):
+            line = self.current_lines[i]
 
-        in_block = False
-        block: DocBlock | None = None
+            if re.match(self.current_language.BLOCK_START_REGEX, line):
+                i, data = self.parse_block(i)
+                if data:
+                    print(data.json())
+            else:
+                i += 1
 
-        for i in range(len(lines)):
-            line = lines[i]
+    def parse_block(self, start_index: int):
+        block_matcher = DocMatcher[DocBlock](self.current_language.ALLOWED_BLOCKS)
+        tag_matcher = DocMatcher[DocTag](self.current_language.ALLOWED_TAGS)
 
-            # Detect end of a doc block
-            if in_block and re.match(language.BLOCK_END_REGEX, line):
-                if block:
-                    print(block.json())
-                in_block = False
-                block = None
+        block = None
+
+        for i in range(start_index, len(self.current_lines)):
+            raw_line = self.current_lines[i]
+
+            # Start of Block
+            if block is None and re.match(self.current_language.BLOCK_START_REGEX, raw_line):
+                name, content = self.pre_parse_line(raw_line)
+                block = block_matcher.get(name, content) or DocBlock(name)
                 continue
 
-            # Parses the line for the Doc Content (Tags)
-            parsed = FileParser.pre_parse_line(line, language)
-            if parsed is None:
-                continue
+            # End of Block
+            if block and re.match(self.current_language.BLOCK_END_REGEX, raw_line):
+                return i+1, block
 
-            name, content = parsed
+            # Inside block
+            parsed = self.pre_parse_line(raw_line)
+            if parsed and block:
+                name, content = parsed
+                tag = tag_matcher.get(name, self.current_file_path, i, content)
+                if tag:
+                    block.add_element(tag)
 
-            # Detect start of a doc block
-            if not in_block and re.match(language.BLOCK_START_REGEX, line):
-                in_block = True
+        return i+1, None
 
-                block = block_matcher.get(name, content)
-                continue
-
-            # Detect if in doc block and if we should add content
-            if in_block and block:
-                tag: DocTag = tag_matcher.get(name, path, i, content)
-
-                if not tag or not block:
-                    continue
-
-                block.add_element(tag)
-
-    @staticmethod
-    def pre_parse_line(line: str, language: Language) -> tuple[str, str] | None:
-        match = re.match(language.PARAM_REGEX, line)
+    def pre_parse_line(self, line: str):
+        match = re.match(self.current_language.PARAM_REGEX, line)
 
         if not match:
             return None
