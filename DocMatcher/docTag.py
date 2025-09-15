@@ -148,3 +148,24 @@ class ListDocTag(DocTag):
 
     def parse_data(self, data: str):
         self.list = data.split()
+
+class NameDocTag(DocTag):
+    TYPE: str = "NAME"
+    NAME: str
+
+    def __init__(self, file_path, line_number, data):
+        self.name: str = None
+
+        super().__init__(file_path, line_number, data)
+
+    def json(self):
+        return {
+            "type": self.TYPE,
+            "tag-type": self.NAME,
+            "name": self.name
+        }
+
+    def parse_data(self, data):
+        parts = data.split(maxsplit=1)
+
+        self.name = parts[0]
