@@ -1,4 +1,4 @@
-from Language import Language
+from language import Language
 from DocMatcher import DocTag, DocBlock
 from .tags import *
 from .blocks import *
