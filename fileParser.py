@@ -1,23 +1,19 @@
 import re
 
-from Language import *
+from language import Language
 from DocMatcher import *
-
 
 class FileParser:
     def __init__(self):
         self.blocks: list[DocBlock] = []
 
-        self.current_language: Language = None
+        self.current_language: Language|None = None
         self.current_file_path: str = ""
-        self.current_lines: list[str] = ""
+        self.current_lines: list[str] = []
 
-    def parse_file(self, path: str):
+    def parse_file(self, path: str, language: type[Language]):
         self.current_file_path = path
-        self.current_language = LanguageMatcher.get_language_for_file(path)
-
-        if not self.current_language: 
-            return
+        self.current_language = language
         
         self.current_lines: list[str] = []
         with open(path, "r", encoding="utf-8") as file:
@@ -49,7 +45,7 @@ class FileParser:
             # Start of Block
             if block is None and re.match(self.current_language.BLOCK_START_REGEX, raw_line):
                 name, content = self.pre_parse_line(raw_line)
-                block = block_matcher.get(name, content) or DocBlock(name)
+                block = block_matcher.get(name, DocBlock, content)
                 continue
 
             # End of Block
@@ -60,11 +56,11 @@ class FileParser:
             parsed = self.pre_parse_line(raw_line)
             if parsed and block:
                 name, content = parsed
-                tag = tag_matcher.get(name, self.current_file_path, i, content)
+                tag = tag_matcher.get(name, DocTag, self.current_file_path, i, content)
                 if tag:
                     block.add_element(tag)
 
-        return i+1, None
+        return start_index+1, None
 
     def pre_parse_line(self, line: str):
         match = re.match(self.current_language.PARAM_REGEX, line)
