@@ -3,6 +3,7 @@
 ---
 
 ---@hook DTTTHandleMute
+--@namespace GM
 --@author g4pls
 --@realm a
 --@desc Handles all Mute Logic. Runs on %hook:TTT2PostPlayerDeath%
@@ -14,6 +15,7 @@ function GM:DTTTHandleMute()
 end
 
 ---@hook DTTTPreMute
+--@namespace GM
 --@author g4pls
 --@realm server
 --@desc Runs bevor actual mute logic happens in %hook:DTTTHandleMute%
@@ -28,6 +30,7 @@ function GM:DTTTPreMute()
 end
 
 ---@hook DTTTMute
+--@namespace GM
 --@realm shared
 --@desc Runs actual mute logic. Gets called by %hook:DTTTHandleMute%
 --@param Player ply Player to mute
@@ -35,7 +38,8 @@ end
 --@param number duration Duration mute state should last
 --@return boolean false To stop execution
 --@return table {ply, state, duration} to modify the values
---@return nil To just continue execution
+--@return nil nil To just continue execution
+--@deprecated
 ---
 function GM:DTTTMute()
 end
@@ -46,4 +50,4 @@ end
 --@desc Help text
 --@flags FCVAR_NOTIFY FCVAR_ARCHIVE
 ---
-local idle_time = CreateConVar("ttt_idle_limit", "180", { FCVAR_NOTIFY, FCVAR_ARCHIVE }, "Help text")
+local _ = CreateConVar("ttt_idle_limit", "180", { FCVAR_NOTIFY, FCVAR_ARCHIVE }, "Help text")
