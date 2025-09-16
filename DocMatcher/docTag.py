@@ -1,36 +1,37 @@
 from abc import abstractmethod
 from .docMatcher import DocElement
-from typing import TypeVar, Generic
-
-T = TypeVar("T", bound="ValueDocTag")
 
 class DocTag(DocElement):
+    TYPE: str = "UNDEFINED"
     NAME: str = "undefined"
 
     def __init__(self, file_path: str, line_number: int, data: str):
         super().__init__()
         self.file_path = file_path
         self.line_number = line_number
+        self.__data = {}
         self.parse_data(data)
 
-    @abstractmethod
     def json(self):
-        pass
+        return {
+            "type": self.TYPE,
+            "tag-type": self.NAME,
+            "data": self.__data
+        }
 
-    @abstractmethod
     def parse_data(self, data: str):
-        pass
+        self.__data = data
 
-#
-#
-#
+#############
+# Base Tags #
+#############
 
 class TextDocTag(DocTag):
     TYPE: str = "TEXT"
     NAME: str
 
     def __init__(self, file_path, line_number, data):
-        self.text: str = None
+        self.text: str = ""
 
         super().__init__(file_path, line_number, data)
 
@@ -90,7 +91,7 @@ class StateDocTag(DocTag):
     STATES: list[str]
 
     def __init__(self, file_path, line_number, data):
-        self.state: str = None
+        self.state: str|None = None
 
         super().__init__(file_path, line_number, data)
 
@@ -111,8 +112,8 @@ class ValueDocTag(ParameterDocTag):
     SPLIT: int = 2
 
     def __init__(self, file_path, line_number, data):
-        self.type: str
-        self.value: str
+        self.type: str = "unknown"
+        self.value: str|None = None
 
         super().__init__(file_path, line_number, data)
 
@@ -135,7 +136,7 @@ class ListDocTag(DocTag):
     NAME: str
     
     def __init__(self, file_path, line_number, data):
-        self.list: list[str]
+        self.list: list[str] = []
 
         super().__init__(file_path, line_number, data)
 
