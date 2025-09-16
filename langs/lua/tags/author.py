@@ -1,4 +1,4 @@
-from DocMatcher.docTag import TextDocTag
+from DocMatcher.docTag import ListDocTag
 
-class AuthorDocTag(TextDocTag):
+class AuthorDocTag(ListDocTag):
     NAME: str = "author"
