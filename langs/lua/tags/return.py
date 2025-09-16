@@ -1,6 +1,6 @@
 from DocMatcher.docTag import ParameterDocTag
 
-class ParamDocTag(ParameterDocTag):
+class ReturnDocTag(ParameterDocTag):
     NAME: str = "return"
     SPLIT: int = 1
 
