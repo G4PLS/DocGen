@@ -12,6 +12,8 @@ for loader, name, is_pkg in pkgutil.iter_modules(__path__):
         if isinstance(obj, type) and issubclass(obj, DocBlock) and obj is not DocBlock:
             _BLOCKS.append(obj)
 
+_BLOCKS = list(dict.fromkeys(_BLOCKS))
+
 # expose all tag classes at package level
 globals().update({cls.__name__: cls for cls in _BLOCKS})
 __all__ = [cls.__name__ for cls in _BLOCKS]
