@@ -10,7 +10,7 @@
 --@param Player ply
 --@param boolean state Mute state
 --@param number duration Duration mute state should last
----
+---@demno
 function GM:DTTTHandleMute()
 end
 

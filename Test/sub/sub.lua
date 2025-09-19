@@ -1,3 +1,7 @@
+---@class ANOTHER PAIN
+--@author g4pls
+---
+
 ---@hook TESTING
 --@author g4pls
 --@realm client
